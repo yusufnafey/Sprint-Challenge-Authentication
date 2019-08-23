@@ -20,6 +20,23 @@ router.post("/register", (req, res) => {
   }
 });
 
-router.post("/login", (req, res) => {});
+router.post("/login", (req, res) => {
+  const { username, password } = req.body;
+
+  Users.findBy({ username })
+    .first()
+    .then(user => {
+      if (user) {
+        res.status(200).json({ message: `Welcome, ${user.username}` });
+      } else {
+        res
+          .status(401)
+          .json({ message: `Nice try, ${user.username}. Maybe next time.` });
+      }
+    })
+    .catch(error => {
+      res.status(500).json({ message: "There was an error logging in." });
+    });
+});
 
 module.exports = router;
