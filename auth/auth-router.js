@@ -11,7 +11,7 @@ router.post("/register", (req, res) => {
   user.password = hash;
 
   if (!user.username || !user.password) {
-    res.status(400).json({ message: "Please provide username and password." });
+    res.status(422).json({ message: "Please provide username and password." });
   } else {
     Users.add(user)
       .then(user => {
