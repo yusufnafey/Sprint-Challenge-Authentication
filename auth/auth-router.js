@@ -1,14 +1,17 @@
 const router = require("express").Router();
+const bcrypt = require("bcryptjs");
 
 const Users = require("./auth-model");
 
 router.post("/register", (req, res) => {
-  const newUser = req.body;
+  const user = req.body;
+  const hash = bcrypt.hashSync(user.password, 10);
+  user.password = hash;
 
-  if (!newUser.username || !newUser.password) {
+  if (!user.username || !user.password) {
     res.status(400).json({ message: "Please provide username and password." });
   } else {
-    Users.add(newUser)
+    Users.add(user)
       .then(user => {
         res.status(201).json(user);
       })
@@ -26,7 +29,7 @@ router.post("/login", (req, res) => {
   Users.findBy({ username })
     .first()
     .then(user => {
-      if (user) {
+      if (user && bcrypt.compareSync(password, user.password)) {
         res.status(200).json({ message: `Welcome, ${user.username}` });
       } else {
         res
